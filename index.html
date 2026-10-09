@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default" data-font-size="normal">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>.Trak — Personalized Voice-Navigated Patient Leaflet Assistant</title>
+  <meta name="description" content=".Trak — Personalized, hands-free speech recognition medication leaflet assistant for low-vision and blind users." />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Atkinson Hyperlegible', sans-serif;
+
+      --trak-red: #E31837;
+      --trak-red-glow: rgba(227, 24, 55, 0.4);
+      --trak-red-soft: rgba(227, 24, 55, 0.1);
+
+      /* Theme 1: Premium Obsidian Dark (AAA Contrast) */
+      --bg-main: #060913;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-hover: rgba(24, 35, 60, 0.85);
+      --bg-pill: rgba(30, 41, 67, 0.7);
+      --border-color: rgba(255, 255, 255, 0.14);
+      --border-glow: rgba(227, 24, 55, 0.5);
+      --text-primary: #FFFFFF;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+
+      --accent-green: #10B981;
+      --accent-amber: #F59E0B;
+      --accent-blue: #38BDF8;
+
+      --base-font-size: 18px;
+      --radius-lg: 24px;
+      --radius-md: 14px;
+    }
+
+    /* Theme 2: Light Premium */
+    [data-theme="light"] {
+      --bg-main: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --bg-card-hover: #F1F5F9;
+      --bg-pill: #E2E8F0;
+      --border-color: #CBD5E1;
+      --border-glow: #E31837;
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --trak-red: #D52B1E;
+      --trak-red-soft: rgba(213, 43, 30, 0.08);
+    }
+
+    /* Theme 3: High Contrast Yellow */
+    [data-theme="yellow"] {
+      --bg-main: #000000;
+      --bg-card: #0A0A0A;
+      --bg-card-hover: #171717;
+      --bg-pill: #262626;
+      --border-color: #FFFF00;
+      --border-glow: #FFFF00;
+      --text-primary: #FFFF00;
+      --text-secondary: #FFFFFF;
+      --text-muted: #E5E5E5;
+      --trak-red: #FF3333;
+    }
+
+    [data-font-size="large"] { --base-font-size: 21px; }
+    [data-font-size="giant"] { --base-font-size: 25px; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: var(--base-font-size); scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-bottom: 7.5rem;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(227, 24, 55, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(56, 189, 248, 0.08) 0%, transparent 45%);
+      background-attachment: fixed;
+    }
+
+    *:focus-visible {
+      outline: 4px solid var(--accent-amber) !important;
+      outline-offset: 4px !important;
+      border-radius: 8px;
+    }
+
+    button, select, input { font-family: inherit; font-size: inherit; color: inherit; }
+    button { cursor: pointer; border: none; background: none; }
+
+    .app-wrapper {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Animated Header */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.1rem 1.6rem;
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .trak-brand-logo {
+      font-family: var(--font-heading);
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .trak-dot {
+      color: var(--trak-red);
+      animation: pulseGlow 2s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { text-shadow: 0 0 4px var(--trak-red-glow); }
+      100% { text-shadow: 0 0 18px var(--trak-red), 0 0 30px var(--trak-red); }
+    }
+
+    .nav-actions { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+
+    .btn-icon-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.1rem;
+      background: var(--bg-pill);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .btn-icon-pill:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-glow);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+
+    .btn-icon-pill.active-listening {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+    }
+
+    .mic-pulse-ring {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      animation: micPulse 1.4s infinite;
+    }
+
+    @keyframes micPulse {
+      0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .key-badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      background: var(--trak-red);
+      color: #FFFFFF;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      font-family: monospace;
+      box-shadow: 0 2px 8px var(--trak-red-glow);
+    }
+
+    /* Live Voice Banner */
+    .voice-command-banner {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 2px solid var(--accent-green);
+      border-radius: 16px;
+      padding: 0.9rem 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: 0 6px 24px rgba(16, 185, 129, 0.25);
+      animation: fadeInUp 0.5s ease;
+    }
+
+    .minimal-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hero-summary-box {
+      background: var(--trak-red-soft);
+      border-left: 6px solid var(--trak-red);
+      padding: 1.35rem;
+      border-radius: var(--radius-md);
+      margin-top: 1.25rem;
+    }
+
+    .btn-play-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--trak-red) 0%, #B30C25 100%);
+      color: #FFFFFF;
+      font-weight: 800;
+      padding: 0.75rem 1.6rem;
+      border-radius: 16px;
+      box-shadow: 0 6px 24px var(--trak-red-glow);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-play-primary:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 30px var(--trak-red-glow);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.35rem;
+      margin-top: 1rem;
+    }
+
+    .summary-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.6rem;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .summary-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--trak-red);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .badge-dosing { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); }
+    .badge-effects { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+    .badge-warning { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+    .badge-storage { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+
+    .bullet-points {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .bullet-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 1.15rem;
+    }
+    .bullet-icon { color: var(--trak-red); margin-top: 3px; flex-shrink: 0; font-weight: 800; }
+
+    .sticky-audio-bar {
+      position: fixed;
+      bottom: 1.35rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 2rem);
+      max-width: 960px;
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 2px solid var(--trak-red);
+      border-radius: 28px;
+      padding: 0.95rem 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.6), 0 0 25px var(--trak-red-glow);
+      z-index: 900;
+    }
+
+    .audio-waves { display: flex; align-items: center; gap: 4px; height: 24px; }
+    .wave-bar { width: 4px; height: 8px; background: var(--trak-red); border-radius: 2px; transition: height 0.2s ease; }
+    .wave-bar.playing { animation: soundWave 0.7s infinite ease-in-out alternate; }
+    @keyframes soundWave { 0% { height: 6px; } 100% { height: 24px; } }
+
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.25rem;
+      backdrop-filter: blur(12px);
+    }
+
+    .laser-frame { position: relative; }
+    .laser-line {
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, transparent, var(--trak-red), transparent);
+      box-shadow: 0 0 14px var(--trak-red);
+      animation: laserMove 2.2s infinite ease-in-out;
+    }
+    @keyframes laserMove { 0% { top: 0%; } 50% { top: 96%; } 100% { top: 0%; } }
+
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-18px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Header -->
+    <header class="header-bar" role="banner">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <div class="trak-brand-logo">
+          <span class="trak-dot">.</span>Trak
+        </div>
+        <span style="font-size:0.85rem; color:var(--text-secondary); margin-left:0.5rem; font-weight:600;">
+          Patient Leaflet Assistant
+        </span>
+      </div>
+
+      <div class="nav-actions" role="toolbar" aria-label="Accessibility options">
+        <!-- Personalized User Name Badge -->
+        <button class="btn-icon-pill" id="btn-user-name" title="Change or update your name">
+          <span style="color:var(--accent-amber);">👋 Hello, <span id="lbl-user-name">Friend</span></span>
+        </button>
+
+        <!-- Live Microphone Toggle -->
+        <button class="btn-icon-pill active-listening" id="btn-toggle-mic" title="Toggle Voice Navigation (Press V)">
+          <span class="mic-pulse-ring" id="mic-indicator-dot"></span>
+          <span id="lbl-mic-state">🎙️ Voice Mic: ON</span>
+          <span class="key-badge">V</span>
+        </button>
+
+        <button class="btn-icon-pill" id="btn-theme" title="Toggle Contrast Modes (Press T)">
+          <span>Contrast</span>
+          <span class="key-badge">T</span>
+        </button>
+
+        <button class="btn-icon-pill" id="btn-text-size" title="Scale Font Size (Press A)">
+          <span id="lbl-size">Text</span>
+          <span class="key-badge">A</span>
+        </button>
+
+        <button class="btn-icon-pill" id="btn-story" title="View Maya's Persona & Brief">
+          <span style="color:var(--trak-red);">❤️ Brief</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Live Speech Command Recognition Feedback Banner -->
+    <div class="voice-command-banner" id="banner-speech-feedback" role="region" aria-label="Voice Command Transcript">
+      <div style="display:flex; align-items:center; gap:0.75rem; font-weight:700;">
+        <span style="font-size:1.4rem;">🎙️</span>
+        <div>
+          <div style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase;">Hands-Free Voice Navigation Active</div>
+          <div style="font-size:1.1rem; color:var(--accent-green);" id="lbl-transcript-text">
+            Speak any command: "Scan", "Read Dosing", "Side Effects", "Download", or "Save Cloud"
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-icon-pill" id="btn-mic-help" style="font-size:0.85rem;" title="View Spoken Commands List">
+        <span>🗣️ Spoken Commands</span>
+      </button>
+    </div>
+
+    <!-- Active Prescription Container -->
+    <div class="minimal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.25rem;">
+        <div>
+          <span style="font-size:0.85rem; text-transform:uppercase; color:var(--text-secondary); font-weight:700;" id="hero-welcome-tag">Welcome to .Trak</span>
+          <h1 style="font-family:var(--font-heading); font-size:2.3rem; margin-top:0.2rem;" id="med-brand-title">Medication Figure X (0.75 mg)</h1>
+          <p style="color:var(--text-secondary); font-size:1.05rem;" id="med-sub-title">Generic Patient Insert • Weekly Subcutaneous Injection</p>
+        </div>
+
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+          <!-- Action 1: Camera Scanner -->
+          <button class="btn-play-primary" id="btn-open-scanner" style="height:50px; font-size:1rem;">
+            <span>📷 Scan</span>
+            <span class="key-badge">S</span>
+          </button>
+
+          <!-- Action 2: Download Document -->
+          <button class="btn-icon-pill" id="btn-download-doc" style="height:50px; font-size:1rem; border-color:var(--accent-blue);" title="Download Document to Machine (Press L)">
+            <span style="color:var(--accent-blue);">💾 Download</span>
+            <span class="key-badge">L</span>
+          </button>
+
+          <!-- Action 3: Save to Cloud -->
+          <button class="btn-icon-pill" id="btn-cloud-save" style="height:50px; font-size:1rem; border-color:var(--accent-green);" title="Save to Google Drive or Cloud (Press G)">
+            <span style="color:var(--accent-green);">☁️ Cloud Save</span>
+            <span class="key-badge">G</span>
+          </button>
+
+          <select id="sel-medication" class="btn-icon-pill" style="height:50px; padding:0 0.8rem; cursor:pointer;" aria-label="Select Scanned Medication Figure">
+            <option value="medX">Medication Figure X</option>
+            <option value="medY">Medication Figure Y</option>
+            <option value="medZ">Medication Figure Z</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="hero-summary-box">
+        <strong style="color:var(--trak-red); display:block; margin-bottom:0.2rem;">Leaflet Summary:</strong>
+        <p style="font-size:1.15rem; margin:0;" id="med-quick-summary">
+          Medication X lowers blood sugar levels in adults. Taken once weekly on the same day each week.
+        </p>
+      </div>
+    </div>
+
+    <!-- Summarized Accessible Cards Grid -->
+    <div class="summary-grid">
+      <!-- 1. Dosing -->
+      <div class="summary-card" id="card-dosing">
+        <div class="card-header">
+          <span class="pill-badge badge-dosing">1. Dosing Instructions</span>
+          <button class="btn-icon-pill" onclick="readSection('dosing')">
+            <span>🔊 Read Dosing</span>
+            <span class="key-badge">D</span>
+          </button>
+        </div>
+        <ul class="bullet-points" id="list-dosing"></ul>
+      </div>
+
+      <!-- 2. Side Effects -->
+      <div class="summary-card" id="card-effects">
+        <div class="card-header">
+          <span class="pill-badge badge-effects">2. Side Effects Summary</span>
+          <button class="btn-icon-pill" onclick="readSection('effects')">
+            <span>🔊 Read Side Effects</span>
+            <span class="key-badge">E</span>
+          </button>
+        </div>
+        <ul class="bullet-points" id="list-effects"></ul>
+      </div>
+
+      <!-- 3. Warnings -->
+      <div class="summary-card" id="card-warnings">
+        <div class="card-header">
+          <span class="pill-badge badge-warning">3. Safety Warnings</span>
+          <button class="btn-icon-pill" onclick="readSection('warnings')">
+            <span>🔊 Read Warnings</span>
+            <span class="key-badge">W</span>
+          </button>
+        </div>
+        <ul class="bullet-points" id="list-warnings"></ul>
+      </div>
+
+      <!-- 4. Storage -->
+      <div class="summary-card" id="card-storage">
+        <div class="card-header">
+          <span class="pill-badge badge-storage">4. Storage Guide</span>
+          <button class="btn-icon-pill" onclick="readSection('storage')">
+            <span>🔊 Read Storage</span>
+            <span class="key-badge">R</span>
+          </button>
+        </div>
+        <ul class="bullet-points" id="list-storage"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Floating Audio Player -->
+  <div class="sticky-audio-bar" role="region" aria-label="Audio Controls">
+    <div style="display:flex; align-items:center; gap:1.1rem;">
+      <button class="btn-play-primary" id="btn-bar-play" style="width:56px; height:56px; border-radius:50%; padding:0; justify-content:center;" title="Play / Pause Audio (Press Spacebar)">
+        <span id="icn-play" style="font-size:1.6rem;">▶</span>
+      </button>
+
+      <div class="audio-waves" aria-hidden="true">
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+
+      <div>
+        <div style="font-size:0.8rem; color:var(--text-secondary); text-transform:uppercase; font-weight:800;" id="lbl-voice-status" role="status" aria-live="polite">
+          Voice Assistant Listening...
+        </div>
+        <div style="font-weight:700; font-size:1.1rem;" id="lbl-voice-title">
+          Press Spacebar or speak a command
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+      <button class="btn-icon-pill" onclick="readSection('dosing')">Dosing <span class="key-badge">D</span></button>
+      <button class="btn-icon-pill" onclick="readSection('effects')">Side Effects <span class="key-badge">E</span></button>
+      <button class="btn-icon-pill" onclick="readSection('warnings')">Warnings <span class="key-badge">W</span></button>
+
+      <select id="sel-voice-rate" class="btn-icon-pill" style="padding:0.4rem; cursor:pointer;" aria-label="Speech rate speed">
+        <option value="0.9">0.9x Calm</option>
+        <option value="1.0" selected>1.0x Normal</option>
+        <option value="1.2">1.2x Faster</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ONBOARDING MODAL: Ask & Remember Single Name (Max 10 Chars, No Question Loops) -->
+  <div id="modal-onboarding" class="modal-backdrop" style="display:flex;">
+    <div class="minimal-card" style="width:100%; max-width:620px; border:3px solid var(--trak-red); text-align:center; padding:2.5rem 1.75rem;">
+      <div style="font-size:3.5rem; margin-bottom:0.5rem;">👋</div>
+      <h2 style="font-family:var(--font-heading); font-size:2rem; margin-bottom:0.4rem;">Welcome to .Trak</h2>
+      <p style="color:var(--text-secondary); font-size:1.1rem; max-width:500px; margin:0 auto 1.25rem auto;">
+        Your voice-guided patient leaflet assistant. What is your name?
+      </p>
+
+      <div style="display:flex; flex-direction:column; gap:1rem; max-width:460px; margin:0 auto;">
+        <!-- Strictly capped at maxlength="10" -->
+        <input 
+          type="text" 
+          id="input-user-name" 
+          maxlength="10"
+          placeholder="Enter or speak your name (max 10 letters)..." 
+          style="width:100%; padding:0.9rem 1.25rem; background:var(--bg-pill); border:2px solid var(--border-color); border-radius:14px; color:var(--text-primary); font-size:1.2rem; font-weight:700; text-align:center;"
+        />
+
+        <div id="onboarding-feedback-msg" style="font-size:0.95rem; color:var(--accent-amber); font-weight:700; min-height:24px;"></div>
+
+        <div style="display:flex; gap:0.75rem;">
+          <button class="btn-play-primary" id="btn-save-onboarding-name" style="flex:1; height:52px; font-size:1.1rem;">
+            <span>Save & Start Program</span>
+          </button>
+
+          <button class="btn-icon-pill active-listening" id="btn-speak-name-mic" style="height:52px; padding:0 1.25rem;" title="Speak your name out loud">
+            <span>🎙️ Listen for Name</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 1: Camera Scanner -->
+  <div id="modal-scanner" class="modal-backdrop" style="display:none;">
+    <div class="minimal-card" style="width:100%; max-width:650px; border:3px solid var(--trak-red);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h2 style="font-family:var(--font-heading); font-size:1.6rem;">📷 Vision Camera Reader</h2>
+        <button class="btn-icon-pill" id="close-modal-scanner">✕</button>
+      </div>
+
+      <div class="laser-frame" style="height:270px; background:#000; border-radius:16px; overflow:hidden; border:2px dashed var(--trak-red); display:flex; align-items:center; justify-content:center; text-align:center;">
+        <div class="laser-line"></div>
+        <div style="padding:1.5rem;">
+          <div style="font-size:3rem; margin-bottom:0.5rem;">📷</div>
+          <h3 style="color:#FFF; font-family:var(--font-heading);">Position Camera Over Insert</h3>
+          <p style="color:#94A3B8; font-size:1rem; margin-top:0.3rem;">Spatial voice guidance is active to help align your camera lens.</p>
+        </div>
+      </div>
+
+      <button class="btn-play-primary" id="btn-trigger-scan" style="width:100%; height:54px; font-size:1.15rem; margin-top:1.25rem;">
+        <span>Trigger Auto-Scan Leaflet</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal 2: Save to Cloud -->
+  <div id="modal-cloud" class="modal-backdrop" style="display:none;">
+    <div class="minimal-card" style="width:100%; max-width:620px; border:3px solid var(--accent-green);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h2 style="font-family:var(--font-heading); font-size:1.6rem; display:flex; align-items:center; gap:0.5rem;">
+          <span style="color:var(--accent-green);">☁️</span> Save to Cloud Storage
+        </h2>
+        <button class="btn-icon-pill" id="close-modal-cloud">✕</button>
+      </div>
+
+      <p style="color:var(--text-secondary); margin-bottom:1.25rem; font-size:1.05rem;">
+        Select your preferred cloud provider to securely back up the scanned medication summary:
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr; gap:1rem; margin-bottom:1.5rem;">
+        <div id="cloud-option-gdrive" style="padding:1.25rem; background:var(--bg-pill); border:2px solid var(--accent-green); border-radius:16px; cursor:pointer; display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:1rem;">
+            <span style="font-size:2rem;">📁</span>
+            <div>
+              <strong style="font-size:1.2rem; display:block;">Google Drive</strong>
+              <span style="font-size:0.9rem; color:var(--text-secondary);">Save as Accessible PDF to My Drive</span>
+            </div>
+          </div>
+          <button class="btn-play-primary" style="padding:0.5rem 1rem; font-size:0.9rem;">Save Now</button>
+        </div>
+
+        <div id="cloud-option-onedrive" style="padding:1.25rem; background:var(--bg-pill); border:1px solid var(--border-color); border-radius:16px; cursor:pointer; display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:1rem;">
+            <span style="font-size:2rem;">☁️</span>
+            <div>
+              <strong style="font-size:1.2rem; display:block;">Microsoft OneDrive</strong>
+              <span style="font-size:0.9rem; color:var(--text-secondary);">Export to Health Locker</span>
+            </div>
+          </div>
+          <button class="btn-icon-pill" style="padding:0.5rem 1rem; font-size:0.9rem;">Export</button>
+        </div>
+      </div>
+
+      <div id="cloud-status-toast" style="display:none; background:rgba(16, 185, 129, 0.15); border:1px solid var(--accent-green); padding:1rem; border-radius:12px; color:var(--accent-green); font-weight:700; text-align:center;">
+        ✓ Document saved successfully to Google Drive!
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Spoken Commands List Help Modal -->
+  <div id="modal-speech-help" class="modal-backdrop" style="display:none;">
+    <div class="minimal-card" style="width:100%; max-width:640px; border:3px solid var(--accent-green);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h2 style="font-family:var(--font-heading); font-size:1.5rem; display:flex; align-items:center; gap:0.5rem;">
+          🗣️ Available Spoken Voice Commands
+        </h2>
+        <button class="btn-icon-pill" id="close-modal-speech">✕</button>
+      </div>
+
+      <p style="color:var(--text-secondary); margin-bottom:1rem;">
+        Speak any of the following phrases out loud to control .Trak hands-free:
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; font-size:0.95rem; margin-bottom:1.25rem;">
+        <div style="background:var(--bg-pill); padding:0.75rem; border-radius:10px;">• <strong>"Scan" / "Camera"</strong> → Open camera scanner</div>
+        <div style="background:var(--bg-pill); padding:0.75rem; border-radius:10px;">• <strong>"Read Dosing"</strong> → Read dosing instructions</div>
+        <div style="background:var(--bg-pill); padding:0.75rem; border-radius:10px;">• <strong>"Side Effects"</strong> → Read side effects summary</div>
+        <div style="background:var(--bg-pill); padding:0.75rem; border-radius:10px;">• <strong>"Warnings"</strong> → Read safety warnings</div>
+        <div style="background:var(--bg-pill); padding:0.75rem; border-radius:10px;">• <strong>"Storage"</strong> → Read storage guide</div>
+        <div style="background:var(--bg-pill); padding:0.75rem; border-radius:10px;">• <strong>"Download"</strong> → Save .txt to computer</div>
+        <div style="background:var(--bg-pill); padding:0.75rem; border-radius:10px;">• <strong>"Google Drive" / "Cloud"</strong> → Open Cloud export</div>
+        <div style="background:var(--bg-pill); padding:0.75rem; border-radius:10px;">• <strong>"Read All" / "Play"</strong> → Read entire summary</div>
+        <div style="background:var(--bg-pill); padding:0.75rem; border-radius:10px;">• <strong>"Stop" / "Pause"</strong> → Stop voice playback</div>
+        <div style="background:var(--bg-pill); padding:0.75rem; border-radius:10px;">• <strong>"Contrast" / "Theme"</strong> → Switch contrast theme</div>
+      </div>
+
+      <button class="btn-play-primary" id="btn-close-speech-modal" style="width:100%; height:46px;">Got It</button>
+    </div>
+  </div>
+
+  <!-- Modal 4: Maya Story & Brief -->
+  <div id="modal-story" class="modal-backdrop" style="display:none;">
+    <div class="minimal-card" style="width:100%; max-width:680px; border:3px solid var(--trak-red);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h2 style="font-family:var(--font-heading); font-size:1.5rem;">CodeForAll 2026 — Track 1 Solution</h2>
+        <button class="btn-icon-pill" id="close-modal-story">✕</button>
+      </div>
+
+      <div style="background:var(--trak-red-soft); border-left:5px solid var(--trak-red); padding:1rem; border-radius:12px; margin-bottom:1rem;">
+        <strong>The Persona: Maya, 34 (Blind / Low Vision)</strong>
+        <p style="font-size:1rem; margin-top:0.3rem; color:var(--text-secondary);">
+          Paper patient leaflets inside medication boxes have no braille or audio access. Maya needs to check side effects and dosage independently without asking sighted assistance.
+        </p>
+      </div>
+
+      <h4 style="font-family:var(--font-heading); margin-bottom:0.5rem;">How .Trak Achieves Sighted Independence:</h4>
+      <ul style="padding-left:1.2rem; display:flex; flex-direction:column; gap:0.5rem; font-size:1rem; color:var(--text-secondary); margin-bottom:1.25rem;">
+        <li><strong>Personalized Onboarding</strong>: Remembers patient name and greets them personally.</li>
+        <li><strong>Hands-Free Speech Recognition</strong>: Full voice navigation right from start of program.</li>
+        <li><strong>Spatial Audio Guidance</strong>: Camera cues guide leaflet positioning without needing eyes.</li>
+        <li><strong>Document Export</strong>: Download scanable summary to local machine or export to Google Drive.</li>
+      </ul>
+
+      <button class="btn-play-primary" id="btn-close-story" style="width:100%; height:48px;">Close Brief</button>
+    </div>
+  </div>
+
+  <script>
+    // Generic Prescription Database
+    const GENERIC_MEDICATIONS = {
+      medX: {
+        brand: "Medication Figure X (0.75 mg)",
+        generic: "Generic Patient Insert • Weekly Subcutaneous Pen",
+        summary: "Medication X lowers blood sugar levels in adults. Taken once weekly on the same day each week.",
+        dosing: [
+          "Take 1 subcutaneous injection once a week, on the same day.",
+          "Inject under skin of stomach area, thigh, or upper arm.",
+          "Can be taken any time of day, with or without food."
+        ],
+        effects: [
+          "Common: Mild nausea, diarrhea, and decreased appetite.",
+          "Serious: Stop use immediately if you have severe persistent stomach pain."
+        ],
+        warnings: [
+          "Do not use if family history of thyroid C-cell carcinoma.",
+          "Low blood sugar risk if combined with insulin."
+        ],
+        storage: [
+          "Store refrigerated between 2°C to 8°C (36°F to 46°F).",
+          "Can be kept at room temperature for up to 14 days."
+        ]
+      },
+      medY: {
+        brand: "Medication Figure Y (5 mg)",
+        generic: "Generic Patient Insert • Weekly Subcutaneous Pen",
+        summary: "Medication Y is a weekly injection for blood sugar and weight management support.",
+        dosing: [
+          "Inject once weekly under skin in stomach, thigh, or arm.",
+          "Rotate injection site each week.",
+          "Time between doses must be at least 3 days (72 hours)."
+        ],
+        effects: [
+          "Common: Mild nausea, constipation, and stomach discomfort.",
+          "Serious: Contact doctor if experiencing severe stomach pain or gallstones."
+        ],
+        warnings: [
+          "Contraindicated in thyroid carcinoma patients.",
+          "Discontinue if pancreatitis symptoms occur."
+        ],
+        storage: [
+          "Store refrigerated between 2°C to 8°C.",
+          "Can stay at room temperature for up to 21 days."
+        ]
+      },
+      medZ: {
+        brand: "Medication Figure Z (100 U/mL)",
+        generic: "Generic Patient Insert • Mealtime Solution",
+        summary: "Medication Z is a fast-acting solution used around meal times.",
+        dosing: [
+          "Inject within 15 minutes before starting a meal or immediately after.",
+          "Inject subcutaneously in stomach, thigh, upper arm, or buttocks."
+        ],
+        effects: [
+          "Common: Low blood sugar (shakiness, sweating, fast heart rate).",
+          "Injection site redness or mild swelling."
+        ],
+        warnings: [
+          "NEVER share an injection pen with another person.",
+          "Always carry fast-acting glucose tablets."
+        ],
+        storage: [
+          "Unopened: Refrigerate until expiration date.",
+          "In-Use Pen: Keep at room temp below 30°C for up to 28 days."
+        ]
+      }
+    };
+
+    let currentMedKey = 'medX';
+    let isPlaying = false;
+    let isTTSSpeaking = false;
+    let isMicListening = false;
+    let userName = localStorage.getItem('trak_user_name') || '';
+
+    let themeIdx = 0;
+    const themeModes = ['default', 'light', 'yellow'];
+    let fontIdx = 0;
+    const fontSizes = ['normal', 'large', 'giant'];
+
+    const synth = window.speechSynthesis;
+    let recognition = null;
+
+    function updateUserNameUI() {
+      if (userName) {
+        document.getElementById('lbl-user-name').textContent = userName;
+        document.getElementById('hero-welcome-tag').textContent = `Welcome back, ${userName}`;
+      } else {
+        document.getElementById('lbl-user-name').textContent = 'Friend';
+        document.getElementById('hero-welcome-tag').textContent = `Welcome to .Trak`;
+      }
+    }
+
+    function renderSummarizedView() {
+      const med = GENERIC_MEDICATIONS[currentMedKey];
+      document.getElementById('med-brand-title').textContent = med.brand;
+      document.getElementById('med-sub-title').textContent = med.generic;
+      document.getElementById('med-quick-summary').textContent = med.summary;
+
+      renderBulletList('list-dosing', med.dosing, '✓');
+      renderBulletList('list-effects', med.effects, '⚡');
+      renderBulletList('list-warnings', med.warnings, '⚠️');
+      renderBulletList('list-storage', med.storage, '📦');
+    }
+
+    function renderBulletList(elementId, items, symbol) {
+      const el = document.getElementById(elementId);
+      el.innerHTML = items.map(item => `
+        <li class="bullet-item">
+          <span class="bullet-icon">${symbol}</span>
+          <span>${item}</span>
+        </li>
+      `).join('');
+    }
+
+    // Professional Lighter Speech Engine with TTS Lock
+    function speakText(text, title, callback) {
+      if (!synth) return;
+      synth.cancel();
+
+      if (!text) {
+        isPlaying = false;
+        isTTSSpeaking = false;
+        updateVoiceUI('Voice Assistant Ready', 'Say a command or press Spacebar');
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = parseFloat(document.getElementById('sel-voice-rate').value) || 1.0;
+      
+      const voices = synth.getVoices();
+      const lightVoice = voices.find(v => 
+        (v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Zira') || v.name.includes('Google US English') || v.name.includes('Victoria')) && v.lang.startsWith('en')
+      ) || voices[0];
+
+      if (lightVoice) {
+        utterance.voice = lightVoice;
+        utterance.pitch = 1.12;
+      }
+
+      utterance.onstart = () => {
+        isPlaying = true;
+        isTTSSpeaking = true; // Lock recognition while TTS speaks
+        updateVoiceUI('Reading Aloud...', title);
+      };
+
+      utterance.onend = () => {
+        isPlaying = false;
+        setTimeout(() => {
+          isTTSSpeaking = false;
+          if (callback) callback();
+        }, 300);
+        updateVoiceUI('Playback Complete', 'Press Spacebar or speak a command');
+      };
+
+      utterance.onerror = () => {
+        isPlaying = false;
+        isTTSSpeaking = false;
+      };
+
+      synth.speak(utterance);
+    }
+
+    function updateVoiceUI(status, title) {
+      document.getElementById('lbl-voice-status').textContent = status;
+      document.getElementById('lbl-voice-title').textContent = title;
+      document.getElementById('icn-play').textContent = isPlaying ? '⏸' : '▶';
+
+      const waves = document.querySelectorAll('.wave-bar');
+      waves.forEach(w => {
+        if (isPlaying) w.classList.add('playing');
+        else w.classList.remove('playing');
+      });
+    }
+
+    function readSection(key) {
+      const med = GENERIC_MEDICATIONS[currentMedKey];
+      const nameTag = userName ? `, ${userName}` : '';
+
+      if (key === 'all') {
+        const text = `${med.brand}${nameTag}. ${med.summary}. Dosing: ${med.dosing.join('. ')}. Side Effects: ${med.effects.join('. ')}. Warnings: ${med.warnings.join('. ')}.`;
+        speakText(text, `Full Summary: ${med.brand}`);
+      } else if (key === 'dosing') {
+        speakText(`Here is your dosing instructions${nameTag}: ${med.dosing.join('. ')}`, `Dosing: ${med.brand}`);
+        scrollToCard('card-dosing');
+      } else if (key === 'effects') {
+        speakText(`Here is your side effects summary${nameTag}: ${med.effects.join('. ')}`, `Side Effects: ${med.brand}`);
+        scrollToCard('card-effects');
+      } else if (key === 'warnings') {
+        speakText(`Important safety warnings${nameTag}: ${med.warnings.join('. ')}`, `Warnings: ${med.brand}`);
+        scrollToCard('card-warnings');
+      } else if (key === 'storage') {
+        speakText(`Storage instructions${nameTag}: ${med.storage.join('. ')}`, `Storage: ${med.brand}`);
+        scrollToCard('card-storage');
+      }
+    }
+
+    function scrollToCard(cardId) {
+      const el = document.getElementById(cardId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Download Document Local File
+    function downloadDocument() {
+      const med = GENERIC_MEDICATIONS[currentMedKey];
+      const nameTag = userName ? `, ${userName}` : '';
+      const docContent = `=====================================================
+.TRAK ACCESSIBLE PATIENT LEAFLET SUMMARY
+PATIENT: ${userName || 'User'}
+=====================================================
+MEDICATION: ${med.brand}
+TYPE: ${med.generic}
+DATE SCANNED: ${new Date().toLocaleDateString()}
+
+1. OVERVIEW & SUMMARY:
+${med.summary}
+
+2. DOSING INSTRUCTIONS:
+${med.dosing.map(d => `- ${d}`).join('\n')}
+
+3. SIDE EFFECTS SUMMARY:
+${med.effects.map(e => `- ${e}`).join('\n')}
+
+4. SAFETY WARNINGS:
+${med.warnings.map(w => `- ${w}`).join('\n')}
+
+5. STORAGE & HANDLING:
+${med.storage.map(s => `- ${s}`).join('\n')}
+=====================================================
+`;
+
+      const blob = new Blob([docContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${med.brand.replace(/[^a-z0-9]/gi, '_')}_Summary.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      speakText(`Downloading ${med.brand} summary to your machine${nameTag}.`);
+    }
+
+    // LIVE SPEECH RECOGNITION ENGINE (with TTS Echo Cancellation)
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) return;
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        isMicListening = true;
+        updateMicUI(true);
+      };
+
+      recognition.onresult = (event) => {
+        // IGNORE microphone input while TTS system voice is active!
+        if (isTTSSpeaking) return;
+
+        const lastResult = event.results[event.results.length - 1];
+        if (lastResult.isFinal) {
+          const command = lastResult[0].transcript.trim().toLowerCase();
+          
+          const onboardingModal = document.getElementById('modal-onboarding');
+          if (onboardingModal.style.display !== 'none') {
+            handleSpokenOnboardingName(command);
+          } else {
+            parseSpokenCommand(command);
+          }
+        }
+      };
+
+      recognition.onerror = () => updateMicUI(false);
+      recognition.onend = () => {
+        if (isMicListening) {
+          try { recognition.start(); } catch(e){}
+        }
+      };
+
+      startListening();
+    }
+
+    function startListening() {
+      if (recognition) {
+        try {
+          recognition.start();
+          isMicListening = true;
+          updateMicUI(true);
+        } catch(e){
+          isMicListening = true;
+          updateMicUI(true);
+        }
+      }
+    }
+
+    function stopListening() {
+      if (recognition) {
+        recognition.stop();
+        isMicListening = false;
+        updateMicUI(false);
+      }
+    }
+
+    function toggleMic() {
+      if (isMicListening) {
+        stopListening();
+        speakText('Microphone muted.');
+      } else {
+        startListening();
+        speakText('Microphone active and listening for your spoken voice commands.');
+      }
+    }
+
+    function updateMicUI(active) {
+      const btn = document.getElementById('btn-toggle-mic');
+      const dot = document.getElementById('mic-indicator-dot');
+      const label = document.getElementById('lbl-mic-state');
+
+      if (active) {
+        btn.classList.add('active-listening');
+        dot.style.background = 'var(--accent-green)';
+        label.textContent = '🎙️ Voice Mic: ON';
+      } else {
+        btn.classList.remove('active-listening');
+        dot.style.background = 'var(--text-muted)';
+        label.textContent = '🎙️ Voice Mic: OFF';
+      }
+    }
+
+    // ONBOARDING NAME CLEANUP & 10-CHARACTER LIMIT
+    function handleSpokenOnboardingName(spokenText) {
+      // Filter out system prompt echoes
+      if (spokenText.includes('welcome') || spokenText.includes('trak') || spokenText.includes('leaflet') || spokenText.includes('before we begin') || spokenText.includes('what is your name') || spokenText.includes('confirm your name')) {
+        return;
+      }
+
+      // Remove filler words e.g. "My name is Mohammed" -> "Mohammed"
+      let cleanName = spokenText.replace(/my name is|i am|call me|this is|name is|hello|hi|yes|confirm/gi, '').trim();
+      cleanName = cleanName.replace(/[^a-zA-Z]/g, ' ').trim();
+
+      // Extract ONLY the first word (single name, without previous values)
+      const firstWord = cleanName.split(/\s+/)[0] || '';
+
+      if (firstWord && firstWord.length >= 2) {
+        // ENFORCE MAXIMUM CHARACTER LIMIT OF 10 CHARACTERS
+        const name10 = firstWord.slice(0, 10);
+        const formattedName = name10.charAt(0).toUpperCase() + name10.slice(1).toLowerCase();
+
+        document.getElementById('input-user-name').value = formattedName;
+        saveOnboardingName(formattedName);
+      }
+    }
+
+    function saveOnboardingName(nameToSave) {
+      const inputVal = document.getElementById('input-user-name').value.trim();
+      let rawName = nameToSave || inputVal;
+
+      if (!rawName) {
+        speakText('Please type or speak your name so I can memorize it.');
+        return;
+      }
+
+      // Clean filler phrases if present
+      let clean = rawName.replace(/my name is|i am|call me|this is|name is|hello|hi|yes|confirm/gi, '').trim();
+      clean = clean.replace(/[^a-zA-Z]/g, ' ').trim();
+
+      // Extract strictly single name, capped at maximum 10 characters
+      const singleWord = (clean.split(/\s+/)[0] || rawName.split(/\s+/)[0] || '').slice(0, 10);
+      
+      if (!singleWord) {
+        speakText('Please type or speak your name.');
+        return;
+      }
+
+      const formattedName = singleWord.charAt(0).toUpperCase() + singleWord.slice(1).toLowerCase();
+
+      // Wipe out any previous stored name completely
+      localStorage.removeItem('trak_user_name');
+      userName = formattedName;
+      localStorage.setItem('trak_user_name', userName);
+
+      // Update UI & Input field cleanly
+      document.getElementById('input-user-name').value = userName;
+      updateUserNameUI();
+
+      // CLOSE ONBOARDING MODAL IMMEDIATELY
+      document.getElementById('modal-onboarding').style.display = 'none';
+
+      // Tell user their name WITHOUT repeating the question!
+      speakText(`Nice to meet you, ${userName}! I am ready to read your patient leaflets.`);
+    }
+
+    function triggerOnboardingPrompt() {
+      const modal = document.getElementById('modal-onboarding');
+      modal.style.display = 'flex';
+      document.getElementById('onboarding-feedback-msg').textContent = '';
+      
+      const inputEl = document.getElementById('input-user-name');
+      inputEl.value = userName || '';
+      inputEl.focus();
+
+      if (userName) {
+        speakText(`Confirm your name, ${userName}, or speak a new name.`);
+      } else {
+        speakText('Welcome to Trak, your accessible patient leaflet assistant. What is your name?');
+      }
+    }
+
+    // SPOKEN VOICE COMMAND PARSER
+    function parseSpokenCommand(cmd) {
+      const bannerText = document.getElementById('lbl-transcript-text');
+      bannerText.textContent = `Recognized Voice Command: "${cmd}"`;
+
+      if (cmd.includes('scan') || cmd.includes('camera')) {
+        document.getElementById('btn-open-scanner').click();
+      } else if (cmd.includes('dosing') || cmd.includes('dosage')) {
+        readSection('dosing');
+      } else if (cmd.includes('side effect') || cmd.includes('effect')) {
+        readSection('effects');
+      } else if (cmd.includes('warning') || cmd.includes('safety')) {
+        readSection('warnings');
+      } else if (cmd.includes('storage') || cmd.includes('fridge')) {
+        readSection('storage');
+      } else if (cmd.includes('download') || cmd.includes('save machine')) {
+        downloadDocument();
+      } else if (cmd.includes('google drive') || cmd.includes('cloud') || cmd.includes('drive')) {
+        document.getElementById('btn-cloud-save').click();
+      } else if (cmd.includes('read all') || cmd.includes('read entire') || cmd.includes('play')) {
+        readSection('all');
+      } else if (cmd.includes('stop') || cmd.includes('pause') || cmd.includes('quiet')) {
+        synth.cancel();
+        isPlaying = false;
+        updateVoiceUI('Voice Assistant Ready', 'Paused playback');
+      } else if (cmd.includes('contrast') || cmd.includes('theme')) {
+        document.getElementById('btn-theme').click();
+      } else if (cmd.includes('text size') || cmd.includes('larger text')) {
+        document.getElementById('btn-text-size').click();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderSummarizedView();
+      initSpeechRecognition();
+      updateUserNameUI();
+
+      // Enforce 10 character max limit & Enter key submit on input field
+      const nameInput = document.getElementById('input-user-name');
+      if (nameInput) {
+        nameInput.addEventListener('input', (e) => {
+          if (e.target.value.length > 10) {
+            e.target.value = e.target.value.slice(0, 10);
+          }
+        });
+        nameInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            saveOnboardingName();
+          }
+        });
+      }
+
+      // Check if user name is already memorized in localStorage
+      if (!userName) {
+        triggerOnboardingPrompt();
+      } else {
+        document.getElementById('modal-onboarding').style.display = 'none';
+        setTimeout(() => {
+          speakText(`Welcome back, ${userName}! Microphone voice navigation is active. Speak commands like Scan, Read Dosing, or Download.`);
+        }, 800);
+      }
+
+      // Onboarding Name Save Button
+      document.getElementById('btn-save-onboarding-name').addEventListener('click', () => {
+        saveOnboardingName();
+      });
+      
+      document.getElementById('btn-speak-name-mic').addEventListener('click', () => {
+        speakText('Microphone active. Please speak your name clearly out loud.');
+        startListening();
+      });
+
+      // Rename button in header
+      document.getElementById('btn-user-name').addEventListener('click', () => {
+        triggerOnboardingPrompt();
+      });
+
+      // Mic toggle
+      document.getElementById('btn-toggle-mic').addEventListener('click', toggleMic);
+
+      // Medication switcher
+      document.getElementById('sel-medication').addEventListener('change', (e) => {
+        currentMedKey = e.target.value;
+        renderSummarizedView();
+        speakText(`Switched to ${GENERIC_MEDICATIONS[currentMedKey].brand}${userName ? `, ${userName}` : ''}`, GENERIC_MEDICATIONS[currentMedKey].brand);
+      });
+
+      // Download & Cloud Wiring
+      document.getElementById('btn-download-doc').addEventListener('click', downloadDocument);
+
+      const cloudModal = document.getElementById('modal-cloud');
+      const cloudToast = document.getElementById('cloud-status-toast');
+
+      document.getElementById('btn-cloud-save').addEventListener('click', () => {
+        cloudModal.style.display = 'flex';
+        cloudToast.style.display = 'none';
+        speakText(`Cloud save window opened${userName ? `, ${userName}` : ''}. Select Google Drive or OneDrive.`);
+      });
+
+      document.getElementById('close-modal-cloud').addEventListener('click', () => {
+        cloudModal.style.display = 'none';
+      });
+
+      document.getElementById('cloud-option-gdrive').addEventListener('click', () => {
+        cloudToast.style.display = 'block';
+        cloudToast.textContent = `✓ ${GENERIC_MEDICATIONS[currentMedKey].brand} summary successfully saved to Google Drive!`;
+        speakText(`Leaflet summary saved successfully to your Google Drive folder${userName ? `, ${userName}` : ''}.`);
+        setTimeout(() => { cloudModal.style.display = 'none'; }, 2200);
+      });
+
+      document.getElementById('cloud-option-onedrive').addEventListener('click', () => {
+        cloudToast.style.display = 'block';
+        cloudToast.textContent = `✓ ${GENERIC_MEDICATIONS[currentMedKey].brand} summary exported to Microsoft OneDrive!`;
+        speakText(`Leaflet summary exported to Microsoft OneDrive${userName ? `, ${userName}` : ''}.`);
+        setTimeout(() => { cloudModal.style.display = 'none'; }, 2200);
+      });
+
+      // Speech help modal
+      const speechModal = document.getElementById('modal-speech-help');
+      document.getElementById('btn-mic-help').addEventListener('click', () => {
+        speechModal.style.display = 'flex';
+      });
+      document.getElementById('close-modal-speech').addEventListener('click', () => {
+        speechModal.style.display = 'none';
+      });
+      document.getElementById('btn-close-speech-modal').addEventListener('click', () => {
+        speechModal.style.display = 'none';
+      });
+
+      // Theme toggle (Key: T)
+      document.getElementById('btn-theme').addEventListener('click', toggleTheme);
+      function toggleTheme() {
+        themeIdx = (themeIdx + 1) % themeModes.length;
+        document.documentElement.setAttribute('data-theme', themeModes[themeIdx]);
+        speakText(`Switched to ${themeModes[themeIdx]} contrast mode`);
+      }
+
+      // Font size scaler (Key: A)
+      document.getElementById('btn-text-size').addEventListener('click', toggleFontSize);
+      function toggleFontSize() {
+        fontIdx = (fontIdx + 1) % fontSizes.length;
+        document.documentElement.setAttribute('data-font-size', fontSizes[fontIdx]);
+        document.getElementById('lbl-size').textContent = `Text: ${fontSizes[fontIdx].toUpperCase()}`;
+        speakText(`Font size scaled to ${fontSizes[fontIdx]}`);
+      }
+
+      // Play / Pause Sticky Bar
+      document.getElementById('btn-bar-play').addEventListener('click', () => {
+        if (isPlaying) {
+          synth.pause();
+          isPlaying = false;
+          updateVoiceUI('Paused', 'Playback Paused');
+        } else if (synth.paused) {
+          synth.resume();
+          isPlaying = true;
+          updateVoiceUI('Reading Aloud...', 'Resumed Playback');
+        } else {
+          readSection('all');
+        }
+      });
+
+      // Scanner modal
+      const scannerModal = document.getElementById('modal-scanner');
+      document.getElementById('btn-open-scanner').addEventListener('click', () => {
+        scannerModal.style.display = 'flex';
+        speakText(`Camera vision scanner opened${userName ? `, ${userName}` : ''}. Align your patient leaflet.`);
+      });
+      document.getElementById('close-modal-scanner').addEventListener('click', () => {
+        scannerModal.style.display = 'none';
+      });
+      document.getElementById('btn-trigger-scan').addEventListener('click', () => {
+        speakText('Scanning insert text... Extraction complete.');
+        setTimeout(() => {
+          scannerModal.style.display = 'none';
+          readSection('all');
+        }, 1200);
+      });
+
+      // Story modal
+      const storyModal = document.getElementById('modal-story');
+      document.getElementById('btn-story').addEventListener('click', () => {
+        storyModal.style.display = 'flex';
+      });
+      document.getElementById('close-modal-story').addEventListener('click', () => {
+        storyModal.style.display = 'none';
+      });
+      document.getElementById('btn-close-story').addEventListener('click', () => {
+        storyModal.style.display = 'none';
+      });
+
+      // KEYBOARD SHORTCUTS FOR LOW-VISION & BLIND USERS
+      window.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+        if (e.code === 'Space') {
+          e.preventDefault();
+          document.getElementById('btn-bar-play').click();
+        } else if (e.key === 'v' || e.key === 'V') {
+          e.preventDefault();
+          toggleMic();
+        } else if (e.key === 's' || e.key === 'S') {
+          e.preventDefault();
+          document.getElementById('btn-open-scanner').click();
+        } else if (e.key === 'l' || e.key === 'L') {
+          e.preventDefault();
+          downloadDocument();
+        } else if (e.key === 'g' || e.key === 'G') {
+          e.preventDefault();
+          document.getElementById('btn-cloud-save').click();
+        } else if (e.key === 'd' || e.key === 'D') {
+          e.preventDefault();
+          readSection('dosing');
+        } else if (e.key === 'e' || e.key === 'E') {
+          e.preventDefault();
+          readSection('effects');
+        } else if (e.key === 'w' || e.key === 'W') {
+          e.preventDefault();
+          readSection('warnings');
+        } else if (e.key === 'r' || e.key === 'R') {
+          e.preventDefault();
+          readSection('storage');
+        } else if (e.key === 't' || e.key === 'T') {
+          e.preventDefault();
+          toggleTheme();
+        } else if (e.key === 'a' || e.key === 'A') {
+          e.preventDefault();
+          toggleFontSize();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+0 verbose cli /opt/homebrew/Cellar/node/26.0.0/bin/node /opt/homebrew/bin/npm
+1 info using npm@11.12.1
+2 info using node@v26.0.0
+3 silly config load:file:/opt/homebrew/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/mohammedzuoriki/.gemini/antigravity-ide/scratch/trak-lilly-app/.npmrc
+5 silly config load:file:/Users/mohammedzuoriki/.npmrc
+6 silly config load:file:/opt/homebrew/etc/npmrc
+7 verbose title npm install
+8 verbose argv "install" "--cache" "./npm-cache"
+9 verbose logfile logs-max:10 dir:/Users/mohammedzuoriki/.gemini/antigravity-ide/scratch/trak-lilly-app/npm-cache/_logs/2026-10-08T10_34_23_105Z-
+10 verbose logfile /Users/mohammedzuoriki/.gemini/antigravity-ide/scratch/trak-lilly-app/npm-cache/_logs/2026-10-08T10_34_23_105Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4395630592 maxSize:1098907648 maxEntrySize:549453824
+13 silly idealTree buildDeps
+14 silly fetch manifest canvas-confetti@^1.9.3
+15 silly packumentCache full:https://registry.npmjs.org/canvas-confetti cache-miss
+16 http fetch GET https://registry.npmjs.org/canvas-confetti attempt 1 failed with ECONNRESET
+17 http fetch GET https://registry.npmjs.org/npm attempt 1 failed with ECONNRESET
+18 http fetch GET https://registry.npmjs.org/canvas-confetti attempt 2 failed with ECONNRESET
+19 http fetch GET https://registry.npmjs.org/npm attempt 2 failed with ECONNRESET
