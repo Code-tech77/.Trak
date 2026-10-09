@@ -1,4 +1,4 @@
-# .Trak — Accessible Patient Information Leaflet AI Assistant
+# .Trak : Accessible Patient Information Leaflet AI Assistant
 
 > **Eli Lilly CodeForAll 2026 Hackathon Prototype**  
 > *Track 1 Solution: Empowering Blind & Low-Vision Patients Through Hands-Free Voice Navigation*
@@ -100,6 +100,34 @@ Paper patient information leaflets inside medication packages present severe acc
 
 ---
 
+## 💡 Skills Learned & Key Takeaways
+
+Building **.Trak** provided rich technical, design, and accessibility insights:
+
+1. **Accessibility-First Engineering (WCAG 2.1 AAA)**
+   * Implemented high-contrast color palettes (Obsidian Dark, Light, High-Contrast Yellow `#FFFF00`) and specialized low-vision typography (*Atkinson Hyperlegible*, designed by the Braille Institute).
+   * Designed a dual-accessibility navigation system combining single-key keyboard shortcuts (`[Space]`, `[V]`, `[S]`, `[L]`, `[G]`, `[D]`, `[E]`, `[W]`, `[R]`, `[T]`, `[A]`) with visual badges.
+
+2. **Web Speech API & Feedback Loop Management**
+   * Engineered hands-free speech recognition and speech synthesis (`SpeechSynthesisUtterance`).
+   * Solved microphone feedback loops by creating a **TTS Microphone Echo Cancellation Lock** (`isTTSSpeaking`) that prevents speech synthesis output from re-triggering the microphone.
+
+3. **User Memory & Conversational State Management**
+   * Designed a single-name onboarding system with strict input validation, single-word extraction, and a 10-character limit (`slice(0, 10)`).
+   * Implemented clean state replacement in `localStorage` to ensure privacy and prevent residual data concatenation.
+
+4. **Spatial Audio Navigation & Vision UI**
+   * Developed spatial camera alignment cues and animated laser scanning frames to guide blind users when positioning medical leaflets under camera lenses.
+
+5. **Client-Side Document Processing & Storage**
+   * Created client-side Blob generation for downloading accessible `.txt` summary files locally.
+   * Simulated cloud storage export workflows for Google Drive and Microsoft OneDrive.
+
+6. **Agile Team Collaboration & Hackathon Compliance**
+   * Practiced rapid design-to-code iteration under strict hackathon rules, ensuring anonymized generic figure compliance (**Medication Figure X, Y, Z**).
+
+---
+
 ## 🚀 Running the Project Locally
 
 ### Prerequisites
@@ -133,8 +161,22 @@ Paper patient information leaflets inside medication packages present severe acc
 
 ---
 
+## 👥 Team & Acknowledgments
+
+Special thanks to our hardworking team for their dedication in bringing **.Trak** to life during the Eli Lilly CodeForAll 2026 Hackathon:
+
+| Team Member | Role | Primary Contributions |
+| :--- | :--- | :--- |
+| **Shu Ang (Naomi) Guo** | **Project Manager** | Coordinated the team and created the presentation |
+| **Mohammed Zuoriki** | **Developer** | Built and developed the prototype |
+| **Delanie Silveira** | **Designer** | Worked on the website design and user experience |
+| **Lawand Salah** | **Designer** | Developed the visual design and accessibility features |
+| **Keeran Prabakaran** | **Developer** | Coded and developed the prototype |
+
+---
+
 ## 📄 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-*Developed with ❤️ for CodeForAll 2026 Hackathon — Track 1 Solution.*
+*Developed with ❤️ for CodeForAll 2026 Hackathon : Track 1 Solution.*
