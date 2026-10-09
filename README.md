@@ -167,11 +167,11 @@ Special thanks to our hardworking team for their dedication in bringing **.Trak*
 
 | Team Member | Role | Primary Contributions |
 | :--- | :--- | :--- |
-| **Shu Ang (Naomi) Guo** | **Project Manager** | Coordinated the team and created the presentation |
+| **[Shu Ang (Naomi) Guo](https://www.linkedin.com/in/naomi-guo-4876ba324/?isSelfProfile=false)** | **Project Manager** | Coordinated the team and created the presentation |
 | **Mohammed Zuoriki** | **Developer** | Built and developed the prototype |
-| **Delanie Silveira** | **Designer** | Worked on the website design and user experience |
-| **Lawand Salah** | **Designer** | Developed the visual design and accessibility features |
-| **Keeran Prabakaran** | **Developer** | Coded and developed the prototype |
+| **[Delanie Silveira](https://www.linkedin.com/in/delanie-silveira-uk/)** | **Designer** | Worked on the website design and user experience |
+| **[Lawand Salah](https://www.linkedin.com/in/lawandsalah/)** | **Designer** | Developed the visual design and accessibility features |
+| **[Keeran Prabakaran](https://www.linkedin.com/in/keeran-prabakaran-166461405/)** | **Developer** | Coded and developed the prototype |
 
 ---
 
